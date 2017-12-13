@@ -1,6 +1,7 @@
 from time import time
 from collections import defaultdict
 from math import gcd
+from functools import reduce
 
 input_file = 'AOC13Input'
 
