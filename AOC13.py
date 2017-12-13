@@ -2,8 +2,6 @@ from time import time
 from collections import defaultdict
 from math import gcd
 
-longest_firewall = 18
-
 
 start = time()
 
@@ -27,6 +25,9 @@ lines = []
 with open('AOC13Input', 'r') as file:
     for line in file:
         lines.append([int(x) for x in line.replace(':', '').strip().split(' ')])
+
+longest_firewall = max([x[1] for x in lines])
+
 data = defaultdict(list)
 for i in lines:
     data[i[1]].append(i[0])
@@ -93,7 +94,8 @@ print('In the form of   delay % x[1] = x[0]')
 # Now we want to find the first and second value for which all our mod arithmetic equation hold true
 # We will store them in coolnum, because they're cool
 coolnum = []
-c = 0
+[init, jum] = count.pop()
+c = init
 while len(coolnum) < 2:
     yes = True
     for x in count:
@@ -102,7 +104,11 @@ while len(coolnum) < 2:
             break
     if yes:
         coolnum.append(c)
-    c += 1
+        c *= 2
+        while c % jum != init:
+            c -= 1
+        c -= jum
+    c += jum
 
 # Now every solution to the mod formulas will be evenly spaced for reasons, so we start at the first and
 # jump by the distance between them every time
