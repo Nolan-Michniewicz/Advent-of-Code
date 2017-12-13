@@ -84,9 +84,10 @@ for i in range(longest_firewall + 1):
 
         # Now we use the values for which any position have the same firewall length
         # I mentioned earlier that delay != -n mod 2*(k-1), so we test that and remove any -n's from our list
-        for j in data[i]:
-            if (0-j) % cycle in count_one_cycle:
-                count_one_cycle.pop(count_one_cycle.index((0-j) % cycle))
+        if len(count_one_cycle) > 1:
+            for j in data[i]:
+                if (0-j) % cycle in count_one_cycle:
+                    count_one_cycle.pop(count_one_cycle.index((0-j) % cycle))
 
         # Now, only if we only have 1 mod value left, we keep it. Could probably keep them all, but that would take
         # more generalizing. And it's 2am and I don't have time
