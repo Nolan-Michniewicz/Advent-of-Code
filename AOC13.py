@@ -2,31 +2,38 @@ from time import time
 from collections import defaultdict
 from math import gcd
 
+input_file = 'AOC13Input'
+
+# Inputs: cycle - a cycle length      
+# count - a list that includes previous cycle lengths if they force delay to be one specific modular residue of Z_{Prev_Cycle_Lengths}
+#
+# Output: a list of possible residues delay can be mod Z_cycle based only upon count
 
 def create_possible_values(cycle, count):
-    # If no previous cases have yielded any result, it can be any number up to cycle (2(i-1))
+    # If no previous cases have yielded any result, it can be any number up to cycle
         if len(count) == 0:
             counter = list(range(cycle))
 
         # However, if there were previous results saved in count
         else:
-            yes = [[] for q in range(len(count))]
-            c = 0
+            yes = [[] for q in range(len(count))]   # Creates a list of subslists, one for each member in count
+            c = 0   # Counter for which member in count we are using
             for j in count:
 
-                # This section is hard to explain, so here is an example. Say [0, 3] is in count and we are looking at
-                # i = 7. Then 0 + 0, 0 + 3, 0 + 6, 0 + 9, ... 0 + 36 all mod 12 will be in a sublist of yes
-                # or [0, 3, 6, 9]
-                # it creates the values possible based on the values we already know true
+                # This section is hard to explain, so here is an example. Assume [2, 6] is in count and we are looking at
+                # i = 6. Then 2 + 0, 2 + 6, 2 + 12, 2 + 18, 2 + 24  all mod 10 will be in a sublist of yes
+                # or [2, 8, 4, 0, 6]
+                # it creates the residues possible based on one residue we already know true
+                
                 if gcd(cycle, j[1]) != 1:
-                    for k in range(cycle * j[1]):  # This loop isn't fully efficient I think, count be narrowed down
+                    for k in range(int(cycle / gcd(cycle, j[1])) + 1): 
                         yes[c].append((j[0]  +  k * j[1])  %  cycle)
-                    yes[c] = list(set(yes[c]))
 
                 # if they are relatively prime then all values will show up
-                # due to group cyclic generators of Zn or something
+                # due to group cyclic generators of Z/nZ
                 else:
                     yes[c] = list(range(cycle))
+                    
                 c += 1
 
             # Start off counter as all possible values
@@ -40,7 +47,7 @@ start = time()
 
 # Splits inputs into list lines
 lines = []
-with open('AOC13Input', 'r') as file:
+with open(input_file, 'r') as file:
     for line in file:
         lines.append([int(x) for x in line.replace(':', '').strip().split(' ')])
 
@@ -71,9 +78,9 @@ for i in lines:
 # Start with the lowest firewall length k with position n,
 # delay + n != 0 mod 2*(k-1)   OR   delay != -n mod 2*(k-1)
 # So from our dictionary, if the key provides a list of length m, we have m of the above equations
-# However, we can derive more by using previous truths
+# However, we can derive more by using previous firewall lengths
 
-# The results will be saved in count, with each entry looking like [values delay must be, mod n]
+# The results will be saved in count, with each entry looking like [residue delay must be mod n, n]
 count = []
 
 for i in range(longest_firewall + 1):
@@ -86,11 +93,13 @@ for i in range(longest_firewall + 1):
         # I mentioned earlier that delay != -n mod 2*(k-1), so we test that and remove any -n's from our list
         if len(count_one_cycle) > 1:
             for j in data[i]:
-                if (0-j) % cycle in count_one_cycle:
-                    count_one_cycle.pop(count_one_cycle.index((0-j) % cycle))
+                temp = (0-j) % cycle
+                if temp in count_one_cycle:
+                    count_one_cycle.pop(count_one_cycle.index(temp))
 
-        # Now, only if we only have 1 mod value left, we keep it. Could probably keep them all, but that would take
-        # more generalizing. And it's 2am and I don't have time
+        # Now, only if we only have 1 modular residue left, we keep it. 
+        # I tested keeping them all, and it added time, I think the time gain for the small chance
+        # of finding another 1 mod value isn't worth it
         if len(count_one_cycle) == 1:
             count.append([count_one_cycle[0], cycle])
 
@@ -100,6 +109,8 @@ print('In the form of   delay % x[1] = x[0]')
 # Now we want to find the first and second value for which all our mod arithmetic equation hold true
 # We will store them in coolnum, because they're cool
 coolnum = []
+# in order to make the next loops faster, we automatically take the biggest cycle length we have
+# only one residue for and only test those numbers that make that true
 [init, jum] = count.pop()
 c = init
 while len(coolnum) < 2:
@@ -111,13 +122,13 @@ while len(coolnum) < 2:
     if yes:
         coolnum.append(c)
         c *= 2
-        # We can jump ahead by a factor of two, since 0-c weren't solutions
-        # This next line just makes sure we are still satisfying the final condition
+        # We can jump ahead by a factor of two, since 0-c weren't solutions (solutions will be evenly spaced)
+        # This next line just makes sure we are still satisfying the condition of the one we popped before the loop
         c -= (c % jum) - init + jum
     c += jum
 
-# Now every solution to the mod formulas will be evenly spaced for reasons, so we start at the first and
-# jump by the distance between them every time
+# Now every solution to the mod formulas will be evenly spaced, 
+# so we start at the first and jump by the distance between them every time
 delay = coolnum[0]
 jump = coolnum[1]-coolnum[0]
 print('First possible delay: ' + str(delay))
