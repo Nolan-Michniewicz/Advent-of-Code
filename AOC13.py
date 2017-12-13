@@ -111,27 +111,31 @@ print('In the form of   delay % x[1] = x[0]')
 
 # in order to make the next loops faster, we automatically take the biggest cycle length we have
 # only one residue for and only test those numbers that make that true
-[init, jum] = count.pop()
-c = init
+if len(count) > 0:
+    [init, jum] = count.pop()
+    c = init
 
-yes = False
-while not yes:
-    yes = True
-    for x in count:
-        if c % x[1] != x[0]:
-            yes = False
-            break
-    if yes:
-        coolnum = c
-    c += jum
+    yes = False
+    while not yes:
+        yes = True
+        for x in count:
+            if c % x[1] != x[0]:
+                yes = False
+                break
+        if yes:
+            coolnum = c
+        c += jum
 
-# Now every solution to the mod formulas will be evenly spaced,
-# with the distance between them being the least common multiple
-# of all the firewall lengths, since that's the first number
-# to maintain all modular residues if added
-count.append([init, jum])
-delay = coolnum
-jump = lcmm([x[1] for x in count])
+    # Now every solution to the mod formulas will be evenly spaced,
+    # with the distance between them being the least common multiple
+    # of all the firewall lengths, since that's the first number
+    # to maintain all modular residues if added
+    count.append([init, jum])
+    delay = coolnum
+    jump = lcmm([x[1] for x in count])
+else:
+    delay = 0
+    jump = 1
 
 print('First possible delay: ' + str(delay))
 print('Jump distance: ' + str(jump))
