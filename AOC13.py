@@ -5,6 +5,15 @@ from functools import reduce
 
 input_file = 'AOC13Input'
 
+
+def lcm(a, b):
+    return a * b // gcd(a, b)
+
+
+def lcmm(args):
+    return reduce(lcm, args)
+
+
 # Inputs: cycle - a cycle length      
 # count - a list that includes previous cycle lengths if they force delay to be one specific modular residue of Z_{Prev_Cycle_Lengths}
 #
