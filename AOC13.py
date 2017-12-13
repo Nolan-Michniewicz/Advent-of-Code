@@ -106,33 +106,36 @@ for i in range(longest_firewall + 1):
 print('Mod Formulas True for Delay: ' + str(count))
 print('In the form of   delay % x[1] = x[0]')
 
-# Now we want to find the first and second value for which all our mod arithmetic equation hold true
-# We will store them in coolnum, because they're cool
-coolnum = []
+# Now we want to find the first for which all our mod arithmetic equation hold true
+# We will store this in coolnum, because it's cool
+
 # in order to make the next loops faster, we automatically take the biggest cycle length we have
 # only one residue for and only test those numbers that make that true
 [init, jum] = count.pop()
 c = init
-while len(coolnum) < 2:
+
+yes = False
+while not yes:
     yes = True
     for x in count:
         if c % x[1] != x[0]:
             yes = False
             break
     if yes:
-        coolnum.append(c)
-        c *= 2
-        # We can jump ahead by a factor of two, since 0-c weren't solutions (solutions will be evenly spaced)
-        # This next line just makes sure we are still satisfying the condition of the one we popped before the loop
-        c -= (c % jum) - init + jum
+        coolnum = c
     c += jum
 
-# Now every solution to the mod formulas will be evenly spaced, 
-# so we start at the first and jump by the distance between them every time
-delay = coolnum[0]
-jump = coolnum[1]-coolnum[0]
+# Now every solution to the mod formulas will be evenly spaced,
+# with the distance between them being the least common multiple
+# of all the firewall lengths, since that's the first number
+# to maintain all modular residues if added
+count.append([init, jum])
+delay = coolnum
+jump = lcmm([x[1] for x in count])
+
 print('First possible delay: ' + str(delay))
 print('Jump distance: ' + str(jump))
+
 
 # Final Part, just tests the long way
 cont = True
