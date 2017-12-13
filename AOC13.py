@@ -110,9 +110,9 @@ while len(coolnum) < 2:
     if yes:
         coolnum.append(c)
         c *= 2
-        while c % jum != init:
-            c -= 1
-        c -= jum
+        # We can jump ahead by a factor of two, since 0-c weren't solutions
+        # This next line just makes sure we are still satisfying the final condition
+        c -= (c % jum) - init + jum
     c += jum
 
 # Now every solution to the mod formulas will be evenly spaced for reasons, so we start at the first and
