@@ -36,7 +36,7 @@ def create_possible_values(cycle, count):
                 # it creates the residues possible based on one residue we already know true
                 
                 if gcd(cycle, j[1]) != 1:
-                    for k in range(int(cycle / gcd(cycle, j[1])) + 1): 
+                    for k in range(int(cycle / gcd(cycle, j[1]))): 
                         yes[c].append((j[0]  +  k * j[1])  %  cycle)
 
                 # if they are relatively prime then all values will show up
