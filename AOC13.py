@@ -140,9 +140,8 @@ if len(count) > 0:
     # with the distance between them being the least common multiple
     # of all the firewall lengths, since that's the first number
     # to maintain all modular residues if added
-    count.append([init, jum])
     delay = coolnum
-    jump = lcmm([x[1] for x in count])
+    jump = lcmm([x[1] for x in count] + [jum])
 else:
     delay = 0
     jump = 1
